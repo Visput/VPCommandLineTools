@@ -7,7 +7,8 @@ VGIT_VERSION="0.1.0"
 #
 # Looks for local branch name that is partially or fully matching to 2-nd argument.
 # Then checkouts found branch -> pulls updates -> updates submodules recursively -> shows git status.
-# Usage: $ vgit checkout/co branch_name
+# Usage: $ vgit checkout branch_name
+#        $ vgit co branch_name
 #
 vgit_checkout() {
     command_list=("checkout" "co")
@@ -58,7 +59,8 @@ vgit_checkout() {
 # Submodule.
 #
 # Updates submodules recursively -> shows git status.
-# Usage: $ vgit submodule/sbm up.
+# Usage: $ vgit submodule up
+#        $ vgit sbm up
 #
 vgit_submodule() {
     command_list=("submodule" "sbm")
@@ -81,7 +83,7 @@ vgit_submodule() {
 # Status.
 #
 # Shows git status.
-# Usage: $ vgit st.
+# Usage: $ vgit st
 #
 vgit_status() {
     command_list=("st")
@@ -100,7 +102,7 @@ vgit_status() {
 # Version.
 #
 # Shows current tool version.
-# Usage: $ vgit version.
+# Usage: $ vgit version
 #
 vgit_version() {
     command_list=("version")
@@ -116,7 +118,39 @@ vgit_version() {
     return 1
 }
 
+# Help.
+#
+# Shows documentation for supported commands.
+# Usage: $ vgit help
+#        $ vgit
+#
+vgit_help() {
+    command_list=("help")
 
+    command_handled=false
+    if [ $# -eq 0 ]; then
+        command_handled=true
+    fi
+
+    for command in ${command_list[@]}; do
+        if [ "$1" = "$command" ]; then
+            command_handled=true
+            break
+        fi
+    done
+
+    if $command_handled; then
+
+cat << EOF
+    Help is currently in development.
+    Will be available soon.
+EOF
+
+        return 0
+    fi
+
+    return 1
+}
 
 # Execute every function with 'vgit' prefix declared in this file until command is handled (command_result = 0).
 command_result=0
