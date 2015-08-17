@@ -6,7 +6,7 @@ VGIT_VERSION="0.1.0"
 # Checkout.
 #
 # Looks for local branch name that is partially or fully matching to 2-nd argument.
-# Then checkouts found branch -> updates submodules recursively -> shows git status.
+# Then checkouts found branch -> pulls updates -> updates submodules recursively -> shows git status.
 # Usage: $ vgit checkout/co branch_name
 #
 vgit_checkout() {
@@ -21,6 +21,7 @@ vgit_checkout() {
 
             if [ $found_branch_count = 1 ]; then
                 git checkout ${found_branch_list[0]}
+                git pull
                 git submodule update --recursive
                 git status
             else
