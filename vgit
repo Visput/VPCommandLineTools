@@ -1,0 +1,136 @@
+#!/bin/sh
+
+# vgit.sh
+VGIT_VERSION="0.1.0"
+
+# Checkout.
+#
+# Looks for local branch name that is partially or fully matching to 2-nd argument.
+# Then checkouts found branch -> updates submodules recursively -> shows git status.
+# Usage: $ vgit checkout/co branch_name
+#
+vgit_checkout() {
+    command_list=("checkout" "co")
+
+    for command in ${command_list[@]}; do
+        if [ "$1" = "$command" ]; then
+            requested_branch=$2
+
+            found_branch_list=( $(git branch | cut -c 3- | grep -F --ignore-case "$requested_branch") )
+            found_branch_count=${#found_branch_list[@]}
+
+            if [ $found_branch_count = 1 ]; then
+                git checkout ${found_branch_list[0]}
+                git submodule update --recursive
+                git status
+            else
+                if [ $found_branch_count -gt 1 ]; then
+                    echo "'${requested_branch}' matches to $found_branch_count local branches:"
+                else
+                    echo "'${requested_branch}' doesn't match to any local branch:"
+                    found_branch_list=( $(git branch | cut -c 3-) )
+                    found_branch_count=${#found_branch_list[@]}
+                fi
+
+                for (( i = 0 ; i < $found_branch_count ; i++ )) ; do
+                    echo "${i}. ${found_branch_list[$i]}"
+                done
+
+                printf "Enter index of branch -> "
+                read requested_branch_index
+
+                if [[ $requested_branch_index -ge 0 ]] && [[ $requested_branch_index -lt $found_branch_count ]] ; then
+                    requested_branch=${found_branch_list[$requested_branch_index]}
+                    vgit_checkout "checkout" "$requested_branch"
+                else
+                    echo "Entered index is out of bounds"
+                fi
+            fi
+
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+# Submodule.
+#
+# Updates submodules recursively -> shows git status.
+# Usage: $ vgit submodule/sbm up.
+#
+vgit_submodule() {
+    command_list=("submodule" "sbm")
+    param_list=("up")
+
+    for command in ${command_list[@]}; do
+        for param in ${param_list[@]}; do
+            if [[ "$1" = "$command" ]] && [[ "$2" = "$param" ]] ; then
+                git submodule update --recursive
+                git status
+
+                return 0
+            fi
+        done
+    done
+
+    return 1
+}
+
+# Status.
+#
+# Shows git status.
+# Usage: $ vgit st.
+#
+vgit_status() {
+    command_list=("st")
+
+    for command in ${command_list[@]}; do
+        if [ "$1" = "$command" ]; then
+            git status
+
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+# Version.
+#
+# Shows current tool version.
+# Usage: $ vgit version.
+#
+vgit_version() {
+    command_list=("version")
+
+    for command in ${command_list[@]}; do
+        if [ "$1" = "$command" ]; then
+            echo "vgit version $VGIT_VERSION"
+
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+
+
+# Execute every function with 'vgit' prefix declared in this file until command is handled (command_result = 0).
+command_result=0
+command_functions=$(compgen -A function | grep "vgit")
+for command_function in $command_functions; do
+    $command_function "$@"
+
+    command_result=$?
+    if [ $command_result = 0 ]; then
+        break
+    fi
+done
+
+if [ $command_result = 1 ]; then
+    # No command matches.
+    # Delegate execution to original 'git' tool.
+    git "$@"
+fi
