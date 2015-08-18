@@ -1,7 +1,12 @@
 #!/bin/sh
 
 # vgit.sh
-VGIT_VERSION="0.1.0"
+# A set of helpers for git client.
+#
+# Created by Uladzimir Papko on 8/16/15.
+# Copyright (c) 2015 Visput. All rights reserved.
+
+readonly VGIT_VERSION="0.1.0"
 
 # Checkout.
 #
