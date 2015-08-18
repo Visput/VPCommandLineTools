@@ -27,20 +27,20 @@ vgit_checkout() {
                                       | cut -c 3- \
                                       | grep -F --ignore-case "$requested_branch") )
 
-            local found_branch_count=${#found_branch_list[@]}
+            local found_branch_count="${#found_branch_list[@]}"
 
-            if [[ $found_branch_count = 1 ]]; then
+            if [[ "$found_branch_count" -eq 1 ]]; then
                 git checkout "${found_branch_list[0]}"
                 git pull
                 git submodule update --recursive
                 git status
             else
-                if [[ $found_branch_count -gt 1 ]]; then
+                if [[ "$found_branch_count" -gt 1 ]]; then
                     echo "'${requested_branch}' matches to $found_branch_count local branches:"
                 else
                     echo "'${requested_branch}' doesn't match to any local branch:"
                     found_branch_list=( $(git branch | cut -c 3-) )
-                    found_branch_count=${#found_branch_list[@]}
+                    found_branch_count="${#found_branch_list[@]}"
                 fi
 
                 for (( i = 0 ; i < $found_branch_count ; i++ )) ; do
@@ -50,8 +50,8 @@ vgit_checkout() {
                 printf "Enter index of branch -> "
                 read requested_branch_index
 
-                if [[ $requested_branch_index -ge 0 ]] && \
-                   [[ $requested_branch_index -lt $found_branch_count ]] ; then
+                if [[ "$requested_branch_index" -ge 0 ]] && \
+                   [[ "$requested_branch_index" -lt "$found_branch_count" ]] ; then
 
                     requested_branch="${found_branch_list[$requested_branch_index]}"
                     vgit_checkout "${command_list[0]}" "$requested_branch"
@@ -139,7 +139,7 @@ vgit_help() {
     local command_list=("help")
 
     local command_handled=false
-    if [[ $# -eq 0 ]]; then
+    if [[ "$#" -eq 0 ]]; then
         command_handled=true
     fi
 
@@ -171,13 +171,13 @@ main() {
     for command_function in $command_functions; do
         $command_function "$@"
 
-        command_result=$?
-        if [[ $command_result = 0 ]]; then
+        command_result="$?"
+        if [[ "$command_result" -eq 0 ]]; then
             break
         fi
     done
 
-    if [[ $command_result = 1 ]]; then
+    if [[ "$command_result" -eq 1 ]]; then
         # No command matches.
         # Delegate execution to original 'git' tool.
         git "$@"
