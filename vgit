@@ -17,7 +17,7 @@ readonly VGIT_VERSION="0.1.0"
 #        $ vgit co branch_name
 #
 vgit_checkout() {
-    local command_list=("checkout" "co")
+    local command_list=("co")
 
     for command in ${command_list[@]}; do
         if [[ "$1" = "$command" ]]; then
@@ -74,7 +74,7 @@ vgit_checkout() {
 #        $ vgit sbm up
 #
 vgit_submodule() {
-    local command_list=("submodule" "sbm")
+    local command_list=("sbm")
     local param_list=("up")
 
     for command in ${command_list[@]}; do
@@ -181,6 +181,11 @@ main() {
         # No command matches.
         # Delegate execution to original 'git' tool.
         git "$@"
+
+        # Show status when all done.
+        if [[ "$1" != "status" ]]; then
+            git status
+        fi
     fi
 }
 
