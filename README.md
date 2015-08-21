@@ -1,2 +1,2 @@
-# vgit
-A set of helpers for git client.
+## VPCommandLineTools
+A set of extensions for command line tools.
