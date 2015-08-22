@@ -13,8 +13,7 @@ readonly VGIT_VERSION="0.1.0"
 # Looks for local branch name that is partially or fully matching to 2-nd argument.
 # Then checkouts found branch -> pulls updates ->
 # -> updates submodules recursively -> shows git status.
-# Usage: $ vgit checkout branch_name
-#        $ vgit co branch_name
+# Usage: $ vgit co branch_name
 #
 vgit_checkout() {
     local command_list=("co")
@@ -22,10 +21,27 @@ vgit_checkout() {
     for command in ${command_list[@]}; do
         if [[ "$1" = "$command" ]]; then
             local requested_branch="$2"
+            local current_branch="."
 
-            local found_branch_list=( $(git branch \
-                                      | cut -c 3- \
-                                      | grep -F --ignore-case "$requested_branch") )
+            local found_branch_list
+            if [[ "$requested_branch" = "$current_branch" ]]; then
+                # If requested branch is current then it has to be used
+                # without showing list of matches.
+                found_branch_list=( "$requested_branch" )
+            else
+                found_branch_list=( $(git branch \
+                                    | cut -c 3- \
+                                    | grep -F --ignore-case "$requested_branch") )
+
+                for found_branch in ${found_branch_list[@]}; do
+                    if [[ "$requested_branch" = "$found_branch" ]]; then
+                        # If full match found then it has to be used
+                        # without showing list of matches.
+                        found_branch_list=( "$requested_branch" )
+                        break
+                    fi
+                done
+            fi
 
             local found_branch_count="${#found_branch_list[@]}"
 
@@ -67,11 +83,10 @@ vgit_checkout() {
     return 1
 }
 
-# Submodule.
+# Submodule update.
 #
 # Updates submodules recursively -> shows git status.
-# Usage: $ vgit submodule up
-#        $ vgit sbm up
+# Usage: $ vgit sbm up
 #
 vgit_submodule() {
     local command_list=("sbm")
