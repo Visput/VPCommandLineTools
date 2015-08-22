@@ -8,14 +8,15 @@
 
 readonly VGIT_VERSION="0.1.0"
 
-# Checkout.
+# Branch checkout.
 #
-# Looks for local branch name that is partially or fully matching to 2-nd argument.
+# Looks for local branch with name that is partially or fully matching to 2-nd argument.
 # Then checkouts found branch -> pulls updates ->
 # -> updates submodules recursively -> shows git status.
+# If several matches found then program allows user to select one.
 # Usage: $ vgit co branch_name
 #
-vgit_checkout() {
+vgit_branch_checkout() {
     local command_list=("co")
 
     for command in ${command_list[@]}; do
@@ -80,6 +81,21 @@ vgit_checkout() {
         fi
     done
 
+    return 1
+}
+
+# Branch delete.
+#
+# Looks for local branch with name that is partially or fully
+# matching to 2-nd argument. Then deletes found branch -> shows git status.
+# If several matches found then program allows user to select one.
+# If '-a' option is used then it deletes all branches with names that is partially or fully
+# matching to 2-nd argument.
+# Usage: $ vgit del branch_name
+#        $ vgit del -a branch_name
+#
+vgit_branch_delete() {
+    local command_list=("del")
     return 1
 }
 
