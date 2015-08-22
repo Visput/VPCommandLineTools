@@ -99,29 +99,6 @@ vgit_branch_delete() {
     return 1
 }
 
-# Submodule update.
-#
-# Updates submodules recursively -> shows git status.
-# Usage: $ vgit sbm up
-#
-vgit_submodule() {
-    local command_list=("sbm")
-    local param_list=("up")
-
-    for command in ${command_list[@]}; do
-        for param in ${param_list[@]}; do
-            if [[ "$1" = "$command" ]] && [[ "$2" = "$param" ]] ; then
-                git submodule update --recursive
-                git status
-
-                return 0
-            fi
-        done
-    done
-
-    return 1
-}
-
 # Status.
 #
 # Shows git status.
