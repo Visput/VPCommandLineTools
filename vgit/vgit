@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # vgit.sh
-# A set of helpers for git client.
+# A set of extensions to git client.
 #
 # Created by Uladzimir Papko on 8/16/15.
 # Copyright (c) 2015 Visput. All rights reserved.

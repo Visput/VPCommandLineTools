@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# install-vptools.sh
+# Installs all tools extensions.
+#
+# Created by Uladzimir Papko on 8/23/15.
+# Copyright (c) 2015 Visput. All rights reserved.
+
 original_path="$pwd"
 script_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
