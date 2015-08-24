@@ -266,6 +266,7 @@ vgit_version() {
 vgit_help() {
     local command_list=("help")
 
+    local requested_command=""
     local command_handled=false
     if [[ "$#" -eq 0 ]]; then
         command_handled=true
@@ -274,16 +275,29 @@ vgit_help() {
     for command in ${command_list[@]}; do
         if [[ "$1" = "$command" ]]; then
             command_handled=true
+            requested_command="$2"
             break
         fi
     done
 
     if $command_handled; then
-
+        # No specific command is provided.
+        # Show general help information.
+        if [[ "${#requested_command}" -eq 0 ]]; then
 cat << END
-Help is currently in development.
-Will be available soon.
+vgit commands:
+    co         Checkout a local branch
+    del        Delete a local branch
+    st         Show the working tree status
+    version    Show vgit current version
+    help       Display help information about vgit
+
+If any other command is used that is not presented in above list
+then it will be delegated for execution to original git tool.
 END
+        else
+            test=""
+        fi
 
         return 0
     fi
