@@ -30,6 +30,7 @@ vgit_branch_checkout() {
                 # without showing list of matches.
                 found_branch_list=( "$requested_branch" )
             else
+                # Find all matches to requested branch.
                 found_branch_list=( $(git branch \
                                     | cut -c 3- \
                                     | grep -F --ignore-case "$requested_branch") )
@@ -64,14 +65,15 @@ vgit_branch_checkout() {
                     echo "${i}. ${found_branch_list[$i]}"
                 done
 
-                printf "Enter index of branch -> "
+                printf "Enter index of branch to checkout -> "
                 read requested_branch_index
 
                 if [[ "$requested_branch_index" -ge 0 ]] && \
                    [[ "$requested_branch_index" -lt "$found_branch_count" ]] ; then
 
+                    # Checkout selected branch from the list of matches.
                     requested_branch="${found_branch_list[$requested_branch_index]}"
-                    vgit_checkout "${command_list[0]}" "$requested_branch"
+                    vgit_branch_checkout "${command_list[0]}" "$requested_branch"
                 else
                     echo "Entered index is out of bounds"
                 fi
@@ -89,13 +91,113 @@ vgit_branch_checkout() {
 # Looks for local branch with name that is partially or fully
 # matching to 2-nd argument. Then deletes found branch -> shows git status.
 # If several matches found then program allows user to select one.
-# If '-a' option is used then it deletes all branches with names that is partially or fully
-# matching to 2-nd argument.
+# If '-a|--all' option is used then it deletes all branches with names that are
+# partially or fully matching to 2-nd argument.
 # Usage: $ vgit del branch_name
 #        $ vgit del -a branch_name
+#        $ vgit del --all branch_name
 #
 vgit_branch_delete() {
     local command_list=("del")
+    opt_all_short="-a"
+    opt_all_long="--all"
+
+    for command in ${command_list[@]}; do
+        if [[ "$1" = "$command" ]]; then
+            # Parse arguments and options.
+            local is_all_opt_on=false
+            local requested_branch=""
+            while [[ $# > 1 ]]; do
+                argument="$2"
+                case "$argument" in
+                    "${opt_all_short}"|"${opt_all_long}") is_all_opt_on=true ;;
+                                                       *) requested_branch="$argument" ;;
+                esac
+                shift
+            done
+
+            if [[ "${#requested_branch}" -gt 0 ]]; then
+                # Find all matches to requested branch.
+                found_branch_list=( $(git branch \
+                                    | cut -c 3- \
+                                    | grep -F --ignore-case "$requested_branch") )
+
+                for found_branch in ${found_branch_list[@]}; do
+                    if [[ "$requested_branch" = "$found_branch" ]]; then
+                        # If full match found and --all option isn't used
+                        # then it has to be used without showing list of matches.
+                        if ! $is_all_opt_on; then
+                            found_branch_list=( "$requested_branch" )
+                            break
+                        fi
+                    fi
+                done
+
+                local found_branch_count="${#found_branch_list[@]}"
+
+                if [[ "$found_branch_count" -eq 1 ]]; then
+                    git branch -D "${found_branch_list[0]}"
+                    git status
+                elif [[ "$found_branch_count" -gt 1 ]]; then
+                    if $is_all_opt_on; then
+                        for found_branch in ${found_branch_list[@]}; do
+                            git branch -D "$found_branch"
+                        done
+                        git status
+                    else
+                        echo "'${requested_branch}' matches to $found_branch_count local branches:"
+                        echo "0. -> Delete all branches in this list <-"
+                        for (( i = 0 ; i < $found_branch_count ; i++ )) ; do
+                            echo "$((i+1)). ${found_branch_list[$i]}"
+                        done
+
+                        printf "Enter index of branch to delete -> "
+                        read requested_branch_index
+
+                        if [[ "$requested_branch_index" -ge 0 ]] && \
+                           [[ "$requested_branch_index" -le "$found_branch_count" ]] ; then
+
+                            if [[ "$requested_branch_index" -eq 0 ]]; then
+                                # Option '0' is selected -> Delete all matches.
+                                vgit_branch_delete "${command_list[0]}" "$requested_branch" "$opt_all_short"
+                            else
+                                # Delete selected branch from the list of matches.
+                                requested_branch="${found_branch_list[$((requested_branch_index-1))]}"
+                                vgit_branch_delete "${command_list[0]}" "$requested_branch"
+                            fi
+                        else
+                            echo "Entered index is out of bounds"
+                        fi
+                    fi
+                else
+                    echo "'${requested_branch}' doesn't match to any local branch:"
+                    found_branch_list=( $(git branch | cut -c 3-) )
+                    found_branch_count="${#found_branch_list[@]}"
+                    for (( i = 0 ; i < $found_branch_count ; i++ )) ; do
+                        echo "${i}. ${found_branch_list[$i]}"
+                    done
+
+                    printf "Enter index of branch to delete -> "
+                    read requested_branch_index
+
+                    if [[ "$requested_branch_index" -ge 0 ]] && \
+                       [[ "$requested_branch_index" -lt "$found_branch_count" ]] ; then
+
+                        # Delete selected branch from the list of matches.
+                        requested_branch="${found_branch_list[$requested_branch_index]}"
+                        vgit_branch_delete "${command_list[0]}" "$requested_branch"
+                    else
+                        echo "Entered index is out of bounds"
+                    fi
+                fi
+            else
+                echo "Branch name required"
+            fi
+
+            return 0
+        fi
+    done
+
     return 1
 }
 
