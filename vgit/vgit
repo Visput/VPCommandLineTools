@@ -138,15 +138,25 @@ vgit_branch_delete() {
 
                 if [[ "$found_branch_count" -eq 1 ]]; then
                     git branch -D "${found_branch_list[0]}"
-                    git branch
-                    git status
-                elif [[ "$found_branch_count" -gt 1 ]]; then
-                    if $is_all_opt_on; then
-                        for found_branch in ${found_branch_list[@]}; do
-                            git branch -D "$found_branch"
-                        done
+                    if [[ "$?" -eq 0 ]]; then
                         git branch
                         git status
+                    fi
+                elif [[ "$found_branch_count" -gt 1 ]]; then
+                    if $is_all_opt_on; then
+                        local command_result=0
+                        for found_branch in ${found_branch_list[@]}; do
+                            git branch -D "$found_branch"
+                            command_result="$?"
+                            if [[ "$command_result" -eq 1 ]]; then
+
+                                break
+                            fi
+                        done
+                        if [[ "$command_result" -eq 0 ]]; then
+                            git branch
+                        git status
+                        fi
                     else
                         echo "'${requested_branch}' matches to $found_branch_count local branches:"
                         echo "0. -> Delete all branches in this list <-"
