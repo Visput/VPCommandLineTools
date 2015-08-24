@@ -61,19 +61,22 @@ vgit_branch_checkout() {
                     found_branch_count="${#found_branch_list[@]}"
                 fi
 
+                echo "0. -> Do nothing"
                 for (( i = 0 ; i < $found_branch_count ; i++ )) ; do
-                    echo "${i}. ${found_branch_list[$i]}"
+                    echo "$((i+1)). ${found_branch_list[$i]}"
                 done
 
                 printf "Enter index of branch to checkout -> "
                 read requested_branch_index
 
                 if [[ "$requested_branch_index" -ge 0 ]] && \
-                   [[ "$requested_branch_index" -lt "$found_branch_count" ]] ; then
+                   [[ "$requested_branch_index" -lt "$((found_branch_count+1))" ]] ; then
 
-                    # Checkout selected branch from the list of matches.
-                    requested_branch="${found_branch_list[$requested_branch_index]}"
-                    vgit_branch_checkout "${command_list[0]}" "$requested_branch"
+                    if [[ "$requested_branch_index" -ge 1 ]]; then
+                        # Checkout selected branch from the list of matches.
+                        requested_branch="${found_branch_list[$((requested_branch_index-1))]}"
+                        vgit_branch_checkout "${command_list[0]}" "$requested_branch"
+                    fi
                 else
                     echo "Entered index is out of bounds"
                 fi
@@ -157,23 +160,24 @@ vgit_branch_delete() {
                         fi
                     else
                         echo "'${requested_branch}' matches to $found_branch_count local branches:"
-                        echo "0. -> Delete all branches in this list <-"
+                        echo "0. -> Do nothing"
+                        echo "1. -> Delete all found branches"
                         for (( i = 0 ; i < $found_branch_count ; i++ )) ; do
-                            echo "$((i+1)). ${found_branch_list[$i]}"
+                            echo "$((i+2)). ${found_branch_list[$i]}"
                         done
 
                         printf "Enter index of branch to delete -> "
                         read requested_branch_index
 
                         if [[ "$requested_branch_index" -ge 0 ]] && \
-                           [[ "$requested_branch_index" -le "$found_branch_count" ]] ; then
+                           [[ "$requested_branch_index" -lt "$((found_branch_count+2))" ]] ; then
 
-                            if [[ "$requested_branch_index" -eq 0 ]]; then
-                                # Option '0' is selected -> Delete all matches.
+                            if [[ "$requested_branch_index" -eq 1 ]]; then
+                                # Option '1' is selected -> delete all matches.
                                 vgit_branch_delete "${command_list[0]}" "$requested_branch" "$opt_all_short"
-                            else
+                            elif [[ "$requested_branch_index" -gt 1 ]]; then
                                 # Delete selected branch from the list of matches.
-                                requested_branch="${found_branch_list[$((requested_branch_index-1))]}"
+                                requested_branch="${found_branch_list[$((requested_branch_index-2))]}"
                                 vgit_branch_delete "${command_list[0]}" "$requested_branch"
                             fi
                         else
@@ -182,21 +186,24 @@ vgit_branch_delete() {
                     fi
                 else
                     echo "'${requested_branch}' doesn't match to any local branch:"
+                    echo "0. -> Do nothing"
                     found_branch_list=( $(git branch | cut -c 3-) )
                     found_branch_count="${#found_branch_list[@]}"
                     for (( i = 0 ; i < $found_branch_count ; i++ )) ; do
-                        echo "${i}. ${found_branch_list[$i]}"
+                        echo "$((i+1)). ${found_branch_list[$i]}"
                     done
 
                     printf "Enter index of branch to delete -> "
                     read requested_branch_index
 
                     if [[ "$requested_branch_index" -ge 0 ]] && \
-                       [[ "$requested_branch_index" -lt "$found_branch_count" ]] ; then
+                       [[ "$requested_branch_index" -lt "$((found_branch_count+1))" ]] ; then
 
-                        # Delete selected branch from the list of matches.
-                        requested_branch="${found_branch_list[$requested_branch_index]}"
-                        vgit_branch_delete "${command_list[0]}" "$requested_branch"
+                        if [[ "$requested_branch_index" -ge 1 ]]; then
+                            # Delete selected branch from the list of matches.
+                            requested_branch="${found_branch_list[$((requested_branch_index-1))]}"
+                            vgit_branch_delete "${command_list[0]}" "$requested_branch"
+                        fi
                     else
                         echo "Entered index is out of bounds"
                     fi
