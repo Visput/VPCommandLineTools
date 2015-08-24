@@ -89,7 +89,8 @@ vgit_branch_checkout() {
 # Branch delete.
 #
 # Looks for local branch with name that is partially or fully
-# matching to 2-nd argument. Then deletes found branch -> shows git status.
+# matching to 2-nd argument. Then deletes found branch ->
+# -> shows updated list of branches -> shows git status.
 # If several matches found then program allows user to select one.
 # If '-a|--all' option is used then it deletes all branches with names that are
 # partially or fully matching to 2-nd argument.
@@ -137,12 +138,14 @@ vgit_branch_delete() {
 
                 if [[ "$found_branch_count" -eq 1 ]]; then
                     git branch -D "${found_branch_list[0]}"
+                    git branch
                     git status
                 elif [[ "$found_branch_count" -gt 1 ]]; then
                     if $is_all_opt_on; then
                         for found_branch in ${found_branch_list[@]}; do
                             git branch -D "$found_branch"
                         done
+                        git branch
                         git status
                     else
                         echo "'${requested_branch}' matches to $found_branch_count local branches:"
