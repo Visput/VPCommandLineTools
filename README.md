@@ -3,8 +3,10 @@ A set of extensions for command line tools.
 Currently tools include only git extension: vgit.
 ### vgit v0.1.0
 A set of commands that extend git tool.  
+Supported commands: co, del, st, version, help.  
+If any other command is used that is not presented in above list then it will be delegated for execution to original git tool.
 #### vgit co
-###### Description  
+###### Description
 Checkouts a local branch.  
 Looks for local branch with name that is partially or fully matching to string provided as an argument.  
 Then checkouts found branch, pulls updates, updates submodules recursively, shows status.  
@@ -55,8 +57,6 @@ $ vgit help <command>
 $ vgit help
 $ vgit
 ```
-#### Note
-If any other command is used that is not presented in above list then it will be delegated for execution to original git tool.  
 ### Installation
 1. Clone repository to a local machine.
 2. Execute shell command from the repository root directory:
