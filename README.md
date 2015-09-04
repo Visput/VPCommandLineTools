@@ -1,9 +1,9 @@
 ## VPCommandLineTools v0.1.0
 A set of extensions for command line tools.  
-Currently tools include only git extension: [vgit](#vgit).
-### vgit v0.1.0<a name="vgit"></a>
+Currently tools include only git extension: vgit.
+### vgit v0.1.0
 A set of commands that extend git tool.  
-##### vgit co
+#### vgit co
 ###### Description  
 Checkouts a local branch.  
 Looks for local branch with name that is partially or fully matching to string provided as an argument.  
@@ -14,7 +14,7 @@ If no matches found then program allows user to select one from full list.
 ```
 $ vgit co <branch>
 ```
-##### vgit del
+#### vgit del
 ###### Description
 Deletes a local branch or list of local branches.  
 It looks for local branch with name that is partially or fully matching to string provided as an argument.  
@@ -30,21 +30,21 @@ $ vgit del <branch>
 $ vgit del -a <branch>
 $ vgit del --all <branch>
 ```
-##### vgit st
+#### vgit st
 ###### Description
 Shows the working tree status.
 ###### Usage
 ```
 $ vgit st
 ```
-##### vgit version
+#### vgit version
 ###### Description
 Shows vgit current version.
 ###### Usage
 ```
 $ vgit version
 ```
-##### vgit help
+#### vgit help
 ###### Description
 Displays help information about vgit.  
 Command full documentation is presented if its name is provided as an argument.  
@@ -55,7 +55,7 @@ $ vgit help <command>
 $ vgit help
 $ vgit
 ```
-##### Note
+#### Note
 If any other command is used that is not presented in above list then it will be delegated for execution to original git tool.  
 ### Installation
 1. Clone repository to a local machine.
