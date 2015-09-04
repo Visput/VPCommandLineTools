@@ -11,23 +11,28 @@ readonly VGIT_VERSION="0.1.0"
 # Global constants.
 OPTION_HELP="--help"
 
-# Branch checkout.
-#
-# Looks for local branch with name that is partially or fully matching to
-# requested branch. Then checkouts found branch -> pulls updates ->
-# -> updates submodules recursively -> shows git status.
-# If several matches found then program allows user to select one.
-# Usage: $ vgit co <branch>
-#
+# Checkout.
+# Checkouts a local branch.
 vgit_branch_checkout() {
     local command="co"
 
     # Documentation.
     if [[ "$1" = "$command" ]] && [[ "$2" = "$OPTION_HELP" ]]; then
 cat << END
+
 vgit co
-    Checkout a local branch
-    Usage: $ vgit co <branch>
+
+Description:
+  Checkouts a local branch.
+  Looks for local branch with name that is partially or
+  fully matching to string provided as an argument.
+  Then checkouts found branch, pulls updates,
+  updates submodules recursively, shows status.
+  If several matches found then program allows user to select one.
+  If no matches found then program allows user to select one from full list.
+
+Usage:
+  $ vgit co <branch>
 END
         return 0
     fi
@@ -101,19 +106,8 @@ END
     return 1
 }
 
-# Branch delete.
-#
-# Looks for local branch with name that is partially or fully
-# matching to requested branch. Then deletes found branch ->
-# -> shows updated list of branches -> shows git status.
-# If several matches found then program allows user to select one or
-# delete all of them.
-# If '-a|--all' option is used then it deletes all branches with names that are
-# partially or fully matching to requested branch.
-# Usage: $ vgit del <branch>
-#        $ vgit del -a <branch>
-#        $ vgit del --all <branch>
-#
+# Delete.
+# Deletes a local branch or list of local branches.
 vgit_branch_delete() {
     local command="del"
     local opt_all_short="-a"
@@ -122,11 +116,27 @@ vgit_branch_delete() {
     # Documentation.
     if [[ "$1" = "$command" ]] && [[ "$2" = "$OPTION_HELP" ]]; then
 cat << END
+
 vgit del
-    Delete a local branch
-    Usage: $ vgit del <branch>
-           $ vgit del -a <branch>
-           $ vgit del --all <branch>
+
+Description:
+  Deletes a local branch or list of local branches.
+  It looks for local branch with name that is partially or
+  fully matching to string provided as an argument.
+  Then deletes found branch, shows updated list of branches, shows status.
+  If several matches found then program allows user to select one or
+  delete all of them.
+  If no matches found then program allows user to select one from the full list.
+
+Options:
+  -a, --all
+  Deletes all branches with names that are partially or
+  fully matching to string provided as an argument.
+
+Usage:
+  $ vgit del <branch>
+  $ vgit del -a <branch>
+  $ vgit del --all <branch>
 END
         return 0
     fi
@@ -243,19 +253,21 @@ END
 }
 
 # Status.
-#
-# Shows git status.
-# Usage: $ vgit st
-#
+# Shows the working tree status.
 vgit_status() {
     local command="st"
 
     # Documentation.
     if [[ "$1" = "$command" ]] && [[ "$2" = "$OPTION_HELP" ]]; then
 cat << END
+
 vgit st
-    Show the working tree status
-    Usage: $ vgit st
+
+Description:
+  Shows the working tree status.
+
+Usage:
+  $ vgit st
 END
         return 0
     fi
@@ -270,19 +282,21 @@ END
 }
 
 # Version.
-#
-# Shows current tool version.
-# Usage: $ vgit version
-#
+# Shows vgit current version.
 vgit_version() {
     local command="version"
 
     # Documentation.
     if [[ "$1" = "$command" ]] && [[ "$2" = "$OPTION_HELP" ]]; then
 cat << END
+
 vgit version
-    Show vgit current version
-    Usage: $ vgit version
+
+Description:
+  Shows vgit current version.
+
+Usage:
+  $ vgit version
 END
         return 0
     fi
@@ -297,23 +311,25 @@ END
 }
 
 # Help.
-#
-# Shows documentation for supported commands.
-# Usage: $ vgit help <command>
-#        $ vgit help
-#        $ vgit
-#
+# Displays help information about vgit.
 vgit_help() {
     local command="help"
 
     # Documentation.
     if [[ "$1" = "$command" ]] && [[ "$2" = "$OPTION_HELP" ]]; then
 cat << END
+
 vgit help
-    Display help information about vgit
-    Usage: $ vgit help <command>
-           $ vgit help
-           $ vgit
+
+Description:
+  Displays help information about vgit.
+  Command full documentation is presented if its name is provided as an argument.
+  General help information is presented if no arguments are provided.
+
+Usage:
+  $ vgit help <command>
+  $ vgit help
+  $ vgit
 END
         return 0
     fi
@@ -336,11 +352,11 @@ END
             # Show general help information.
 cat << END
 vgit commands:
-    co         Checkout a local branch
-    del        Delete a local branch
-    st         Show the working tree status
-    version    Show vgit current version
-    help       Display help information about vgit
+  co         Checkout a local branch
+  del        Delete a local branch or list of local branches
+  st         Show the working tree status
+  version    Show vgit current version
+  help       Display help information about vgit
 
 If any other command is used that is not presented in above list
 then it will be delegated for execution to original git tool.
